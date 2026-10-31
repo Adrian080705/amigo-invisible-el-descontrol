@@ -1,0 +1,730 @@
+/* =============================================
+   AMIGO INVISIBLE EL DESCONTROL — Estilos
+   ============================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@400;700&family=Nunito:wght@400;600;700;800&display=swap');
+
+/* ── Variables ── */
+:root {
+  /* Paleta El Descontrol: azules */
+  --azul-hielo:   #a8d8f0;
+  --azul-claro:   #5dade2;
+  --azul-medio:   #2e86c1;
+  --azul-oscuro:  #1a3a5c;
+  --azul-noche:   #0b1e35;
+  --azul-profundo:#060f1c;
+
+  /* Oro: solo para el nombre revelado */
+  --oro:          #f5c542;
+  --oro-claro:    #ffe08a;
+
+  /* Acentos */
+  --blanco:       #ffffff;
+  --plata:        #d6eaf8;
+  --hielo:        rgba(93, 173, 226, 0.15);
+
+  --glass-bg:     rgba(11, 30, 53, 0.55);
+  --glass-border: rgba(93, 173, 226, 0.25);
+  --sombra:       0 8px 40px rgba(0, 0, 0, 0.55);
+  --radio:        20px;
+}
+
+/* ── Reset & Base ── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Nunito', sans-serif;
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse at 20% 10%, rgba(46, 134, 193, 0.18) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 90%, rgba(93, 173, 226, 0.12) 0%, transparent 50%),
+    linear-gradient(160deg, var(--azul-profundo) 0%, var(--azul-noche) 55%, #0d2340 100%);
+  background-attachment: fixed;
+  color: var(--blanco);
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* ── Copos de nieve ── */
+.copo {
+  position: fixed;
+  top: -20px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(168, 216, 240, 0.9) 0%, rgba(93, 173, 226, 0.4) 100%);
+  pointer-events: none;
+  z-index: 0;
+  animation: caerNieve linear infinite;
+  box-shadow: 0 0 6px rgba(93, 173, 226, 0.5);
+}
+
+@keyframes caerNieve {
+  0%   { transform: translateY(-20px) translateX(0) rotate(0deg); opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 0.7; }
+  100% { transform: translateY(110vh) translateX(40px) rotate(360deg); opacity: 0; }
+}
+
+/* ── Layout principal ── */
+.pagina {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+}
+
+/* ── Tarjeta de cristal ── */
+.tarjeta {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: var(--radio);
+  box-shadow:
+    var(--sombra),
+    inset 0 1px 0 rgba(93, 173, 226, 0.2),
+    0 0 0 1px rgba(93, 173, 226, 0.08);
+  padding: 36px 32px;
+  width: 100%;
+  max-width: 420px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.tarjeta::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(93, 173, 226, 0.07) 0%, transparent 60%);
+  pointer-events: none;
+  border-radius: var(--radio);
+}
+
+/* Línea azul superior de acento */
+.tarjeta::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 10%;
+  width: 80%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--azul-claro), transparent);
+  border-radius: 2px;
+}
+
+/* ── Título ── */
+.titulo-evento {
+  font-family: 'Mountains of Christmas', serif;
+  font-size: clamp(1.7rem, 6vw, 2.5rem);
+  font-weight: 700;
+  color: var(--blanco);
+  text-shadow:
+    0 0 30px rgba(93, 173, 226, 0.7),
+    0 0 60px rgba(46, 134, 193, 0.35),
+    0 2px 6px rgba(0,0,0,0.5);
+  line-height: 1.2;
+  margin-bottom: 8px;
+  letter-spacing: 0.5px;
+}
+
+.subtitulo {
+  font-size: 0.9rem;
+  color: rgba(168, 216, 240, 0.7);
+  margin-bottom: 28px;
+}
+
+/* ── Formulario ── */
+.form-grupo {
+  margin-bottom: 16px;
+  text-align: left;
+}
+
+.form-grupo label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.8);
+  margin-bottom: 6px;
+  letter-spacing: 0.3px;
+}
+
+.form-grupo input,
+.form-grupo textarea,
+.form-grupo select {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: 1px solid var(--glass-border);
+  background: rgba(255,255,255,0.1);
+  color: var(--blanco);
+  font-family: 'Nunito', sans-serif;
+  font-size: 1rem;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+  outline: none;
+}
+
+.form-grupo input::placeholder,
+.form-grupo textarea::placeholder {
+  color: rgba(255,255,255,0.35);
+}
+
+.form-grupo input:focus,
+.form-grupo textarea:focus {
+  border-color: var(--azul-claro);
+  background: rgba(93, 173, 226, 0.12);
+  box-shadow: 0 0 0 3px rgba(93, 173, 226, 0.22);
+}
+
+.form-grupo textarea {
+  resize: vertical;
+  min-height: 120px;
+  line-height: 1.5;
+}
+
+/* ── Botones ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 14px 24px;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s, filter 0.15s;
+  letter-spacing: 0.3px;
+  margin-top: 8px;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+  filter: brightness(1.08);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn-principal {
+  background: linear-gradient(135deg, var(--azul-oscuro) 0%, var(--azul-medio) 50%, var(--azul-claro) 100%);
+  color: var(--blanco);
+  box-shadow: 0 4px 20px rgba(46, 134, 193, 0.5);
+  border: 1px solid rgba(93, 173, 226, 0.3);
+  letter-spacing: 0.5px;
+}
+
+.btn-principal:hover {
+  box-shadow: 0 6px 28px rgba(93, 173, 226, 0.65);
+}
+
+.btn-secundario {
+  background: linear-gradient(135deg, var(--azul-oscuro) 0%, var(--azul-medio) 100%);
+  color: var(--blanco);
+  box-shadow: 0 4px 15px rgba(46, 134, 193, 0.4);
+}
+
+.btn-dorado {
+  background: linear-gradient(135deg, var(--azul-medio) 0%, var(--azul-claro) 100%);
+  color: var(--blanco);
+  box-shadow: 0 4px 15px rgba(93, 173, 226, 0.45);
+}
+
+.btn-outline {
+  background: transparent;
+  border: 2px solid var(--glass-border);
+  color: rgba(255,255,255,0.8);
+}
+
+.btn-outline:hover {
+  background: rgba(255,255,255,0.08);
+}
+
+.btn-sm {
+  width: auto;
+  padding: 8px 18px;
+  font-size: 0.9rem;
+  margin-top: 0;
+}
+
+/* ── Mensaje de error / info ── */
+.mensaje {
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-top: 14px;
+  display: none;
+}
+
+.mensaje.visible { display: block; }
+
+.mensaje-error {
+  background: rgba(192, 57, 43, 0.25);
+  border: 1px solid rgba(192, 57, 43, 0.5);
+  color: #ff9f9f;
+}
+
+.mensaje-info {
+  background: rgba(46, 134, 193, 0.18);
+  border: 1px solid rgba(93, 173, 226, 0.4);
+  color: var(--plata);
+}
+
+.mensaje-ok {
+  background: rgba(39, 174, 96, 0.2);
+  border: 1px solid rgba(39, 174, 96, 0.4);
+  color: #a8f0c5;
+}
+
+/* ── Decoraciones ── */
+.adorno-top {
+  font-size: 3rem;
+  margin-bottom: 12px;
+  display: block;
+  filter: drop-shadow(0 0 10px rgba(241,196,15,0.4));
+}
+
+.adorno-linea {
+  width: 80px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--azul-claro), transparent);
+  margin: 16px auto;
+  border-radius: 2px;
+}
+
+/* ──────────────────────────────────────────
+   PÁGINA DE REVELACIÓN
+   ────────────────────────────────────────── */
+
+/* ── Fase 1: Suspense ── */
+#fase-suspense {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 20px;
+}
+
+.texto-suspense {
+  font-family: 'Mountains of Christmas', serif;
+  font-size: clamp(1.4rem, 5vw, 2rem);
+  color: var(--azul-claro);
+  animation: parpadeo 1.2s ease-in-out infinite;
+  text-shadow: 0 0 20px rgba(93, 173, 226, 0.7);
+}
+
+@keyframes parpadeo {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.35; }
+}
+
+.puntos-suspensivos span {
+  display: inline-block;
+  animation: saltoPunto 1.2s infinite;
+  color: var(--azul-claro);
+  font-size: 2rem;
+}
+.puntos-suspensivos span:nth-child(2) { animation-delay: 0.2s; }
+.puntos-suspensivos span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes saltoPunto {
+  0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
+  40%           { transform: translateY(-12px); opacity: 1; }
+}
+
+/* ── Fase 2: Caja ── */
+#fase-caja {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.caja-regalo {
+  font-size: 7rem;
+  display: inline-block;
+  filter: drop-shadow(0 0 24px rgba(93, 173, 226, 0.6));
+  animation: temblor 0.18s ease-in-out infinite;
+  cursor: pointer;
+  line-height: 1;
+  transition: transform 0.12s ease;
+  /* Evitar zoom del navegador en doble tap móvil */
+  touch-action: manipulation;
+}
+
+.caja-regalo:active {
+  filter: drop-shadow(0 0 40px rgba(93, 173, 226, 1));
+}
+
+@keyframes temblor {
+  0%   { transform: rotate(-3deg) scale(1.02); }
+  25%  { transform: rotate(3deg)  scale(0.98); }
+  50%  { transform: rotate(-2deg) scale(1.03); }
+  75%  { transform: rotate(2deg)  scale(0.97); }
+  100% { transform: rotate(-3deg) scale(1.02); }
+}
+
+.texto-caja {
+  font-family: 'Mountains of Christmas', serif;
+  font-size: 1.4rem;
+  color: rgba(255,255,255,0.8);
+  animation: parpadeo 0.8s ease-in-out infinite;
+}
+
+/* ── Fase 3: Revelación ── */
+#fase-revelacion {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 16px;
+  padding: 8px;
+  position: relative;
+}
+
+.titulo-revelacion {
+  font-family: 'Mountains of Christmas', serif;
+  font-size: clamp(1rem, 4vw, 1.3rem);
+  color: rgba(168, 216, 240, 0.8);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.nombre-asignado {
+  font-family: 'Mountains of Christmas', serif;
+  font-size: clamp(2.4rem, 10vw, 4rem);
+  font-weight: 700;
+  color: var(--oro);
+  text-shadow:
+    0 0 30px rgba(245, 197, 66, 0.85),
+    0 0 70px rgba(245, 197, 66, 0.45),
+    0 4px 8px rgba(0,0,0,0.6);
+  line-height: 1.1;
+  animation: zoomEntrada 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  transform: scale(0);
+  opacity: 0;
+}
+
+@keyframes zoomEntrada {
+  0%   { transform: scale(0) rotate(-5deg); opacity: 0; }
+  60%  { transform: scale(1.15) rotate(2deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+.subtexto-revelacion {
+  font-size: clamp(0.9rem, 3.5vw, 1.1rem);
+  color: rgba(255,255,255,0.8);
+  line-height: 1.5;
+  animation: fadeSubir 0.6s ease forwards 0.5s;
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+@keyframes fadeSubir {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Estrellas de fondo en revelación ── */
+.estrella {
+  position: fixed;
+  pointer-events: none;
+  z-index: 0;
+  font-size: 1.2rem;
+  animation: girarEstrella linear infinite;
+  opacity: 0;
+}
+
+@keyframes girarEstrella {
+  0%   { transform: scale(0) rotate(0deg); opacity: 0; }
+  20%  { opacity: 0.8; }
+  80%  { opacity: 0.5; }
+  100% { transform: scale(1.2) rotate(360deg); opacity: 0; }
+}
+
+/* ── Confetti CSS ── */
+.confeti-pieza {
+  position: fixed;
+  top: -10px;
+  width: 10px;
+  height: 14px;
+  border-radius: 2px;
+  pointer-events: none;
+  z-index: 2;
+  animation: caerConfeti linear forwards;
+}
+
+@keyframes caerConfeti {
+  0% {
+    transform: translateY(-10px) rotate(0deg) translateX(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(110vh) rotate(720deg) translateX(var(--drift, 40px));
+    opacity: 0;
+  }
+}
+
+/* ── Halo de brillo ── */
+.halo {
+  position: absolute;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(93, 173, 226, 0.22) 0%, transparent 70%);
+  pointer-events: none;
+  animation: pulsarHalo 2.5s ease-in-out infinite;
+  z-index: -1;
+}
+
+@keyframes pulsarHalo {
+  0%, 100% { transform: scale(1); opacity: 0.6; }
+  50%       { transform: scale(1.3); opacity: 1; }
+}
+
+/* ── Separador con luces en azul ── */
+.luces {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin: 8px 0;
+  flex-wrap: wrap;
+}
+
+.luz {
+  width: 12px;
+  height: 16px;
+  border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
+  display: inline-block;
+  animation: parpadeoLuz 1.5s ease-in-out infinite;
+}
+
+.luz:nth-child(3n)   { background: var(--azul-claro);  animation-delay: 0s;   }
+.luz:nth-child(3n+1) { background: #a8d8f0;            animation-delay: 0.5s; }
+.luz:nth-child(3n+2) { background: var(--azul-medio);  animation-delay: 1s;   }
+
+@keyframes parpadeoLuz {
+  0%, 100% { opacity: 1;   box-shadow: 0 0 8px currentColor; }
+  50%       { opacity: 0.3; box-shadow: none; }
+}
+
+/* ──────────────────────────────────────────
+   ADMIN — Estilos extras
+   ────────────────────────────────────────── */
+
+.tarjeta-admin {
+  max-width: 640px;
+}
+
+.seccion-admin {
+  margin-bottom: 28px;
+}
+
+.seccion-admin h2 {
+  font-family: 'Mountains of Christmas', serif;
+  font-size: 1.5rem;
+  color: var(--azul-hielo);
+  margin-bottom: 16px;
+  text-align: left;
+}
+
+.resultado-json {
+  background: rgba(0,0,0,0.35);
+  border: 1px solid var(--glass-border);
+  border-radius: 10px;
+  padding: 14px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.78rem;
+  color: #a8f0c5;
+  white-space: pre-wrap;
+  word-break: break-all;
+  min-height: 80px;
+  max-height: 280px;
+  overflow-y: auto;
+  text-align: left;
+  resize: vertical;
+}
+
+.instrucciones-admin {
+  background: rgba(243, 156, 18, 0.1);
+  border-left: 4px solid var(--azul-claro);
+  border-radius: 0 10px 10px 0;
+  padding: 14px 16px;
+  font-size: 0.88rem;
+  color: rgba(255,255,255,0.85);
+  text-align: left;
+  line-height: 1.7;
+  margin-top: 16px;
+}
+
+.instrucciones-admin strong {
+  color: var(--azul-hielo);
+}
+
+.btn-fila {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.badge {
+  display: inline-block;
+  background: rgba(39, 174, 96, 0.25);
+  border: 1px solid rgba(39, 174, 96, 0.5);
+  color: #a8f0c5;
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  margin-left: 8px;
+}
+
+/* ──────────────────────────────────────────
+   RESPONSIVE
+   ────────────────────────────────────────── */
+
+@media (max-width: 400px) {
+  .tarjeta {
+    padding: 28px 18px;
+    border-radius: 14px;
+  }
+
+  .btn {
+    padding: 13px 18px;
+    font-size: 0.95rem;
+  }
+
+  .caja-regalo {
+    font-size: 5.5rem;
+  }
+}
+
+@media (min-width: 600px) {
+  .tarjeta {
+    padding: 44px 48px;
+  }
+}
+
+/* ── Scrollbar personalizada ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 3px; }
+
+/* ──────────────────────────────────────────
+   EL DESCONTROL — Personalizaciones
+   ────────────────────────────────────────── */
+
+/* ── Foto de grupo en index.html ── */
+.foto-grupo-wrap {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 16px;
+}
+
+.foto-grupo-placeholder {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--azul-oscuro) 0%, var(--azul-medio) 60%, var(--azul-claro) 100%);
+  border: 3px solid var(--azul-claro);
+  box-shadow: 0 0 0 4px rgba(93, 173, 226, 0.2), var(--sombra);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.6rem;
+  margin: 0 auto;
+  overflow: hidden;
+  animation: pulsarBorde 3s ease-in-out infinite;
+}
+
+.foto-grupo-placeholder img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+@keyframes pulsarBorde {
+  0%, 100% { box-shadow: 0 0 0 4px rgba(93, 173, 226, 0.2), var(--sombra); }
+  50%       { box-shadow: 0 0 0 8px rgba(93, 173, 226, 0.45), var(--sombra); }
+}
+
+/* ── Badge "El Descontrol" ── */
+.badge-grupo {
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(90deg, var(--azul-oscuro), var(--azul-medio));
+  color: var(--azul-claro);
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  padding: 3px 12px;
+  border-radius: 20px;
+  white-space: nowrap;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.4), 0 0 0 1px rgba(93, 173, 226, 0.35);
+  border: 1.5px solid rgba(93, 173, 226, 0.3);
+}
+
+/* ── Foto del asignado en revelar.html ── */
+.foto-asignado-wrap {
+  margin: 12px auto 0;
+  display: flex;
+  justify-content: center;
+}
+
+.foto-asignado-placeholder {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--azul-oscuro) 0%, var(--azul-medio) 100%);
+  border: 2.5px solid var(--azul-claro);
+  box-shadow: 0 0 20px rgba(93, 173, 226, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  overflow: hidden;
+  animation: zoomEntrada 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards 0.4s;
+  transform: scale(0);
+}
+
+.foto-asignado-placeholder img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+/* ── Texto gamberro bajo la revelación ── */
+.subtexto-gamberro {
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.45);
+  margin-top: 6px;
+  font-style: italic;
+  letter-spacing: 0.2px;
+}
+
