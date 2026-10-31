@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tu Amigo Invisible 🎁</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* Estilos exclusivos de esta página */
+    #contenedor-revelacion {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 460px;
+      text-align: center;
+      padding: 16px;
+    }
+
+    #fase-suspense,
+    #fase-apuesta,
+    #fase-caja,
+    #fase-revelacion {
+      display: none;
+    }
+
+    #fase-suspense.activa,
+    #fase-apuesta.activa,
+    #fase-caja.activa,
+    #fase-revelacion.activa {
+      display: flex;
+    }
+
+    /* ── Fase apuesta: ¿a quién quieres que te toque? ── */
+    #fase-apuesta {
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+      padding: 16px;
+      width: 100%;
+      max-width: 460px;
+    }
+
+    .pregunta-apuesta {
+      font-family: 'Mountains of Christmas', serif;
+      font-size: clamp(1.8rem, 7vw, 2.4rem);
+      font-weight: 700;
+      line-height: 1.15;
+      color: var(--blanco);
+      text-shadow: 0 0 24px rgba(93,173,226,0.8), 0 2px 6px rgba(0,0,0,0.6);
+      animation: fadeSubir 0.5s ease forwards;
+    }
+
+    .opciones-apuesta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .opcion-apuesta {
+      font-family: 'Nunito', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--blanco);
+      background: rgba(93,173,226,0.12);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      padding: 12px 20px;
+      cursor: pointer;
+      touch-action: manipulation;
+      transition: transform 0.12s, background 0.2s, border-color 0.2s;
+    }
+
+    .opcion-apuesta:hover,
+    .opcion-apuesta:active {
+      background: rgba(93,173,226,0.3);
+      border-color: var(--azul-claro);
+      transform: translateY(-2px);
+    }
+
+    .opcion-apuesta.seleccionada {
+      background: linear-gradient(135deg, var(--azul-medio), var(--azul-claro));
+      border-color: var(--blanco);
+      box-shadow: 0 0 16px rgba(93,173,226,0.6);
+    }
+
+    /* Resultado de la apuesta (sin caja, tipografía festiva) */
+    .resultado-apuesta {
+      font-family: 'Mountains of Christmas', serif;
+      font-size: clamp(1.4rem, 5.5vw, 1.8rem);
+      font-weight: 700;
+      line-height: 1.2;
+      color: var(--azul-hielo);
+      text-shadow: 0 0 18px rgba(93,173,226,0.6), 0 2px 4px rgba(0,0,0,0.5);
+      margin-top: 4px;
+      animation: fadeSubir 0.6s ease forwards 1.2s;
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    /* Barra de progreso de suspense */
+    .barra-progreso {
+      width: 200px;
+      height: 4px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 2px;
+      overflow: hidden;
+      margin: 0 auto;
+    }
+
+    .barra-progreso-inner {
+      height: 100%;
+      background: linear-gradient(90deg, var(--azul-claro), var(--azul-medio));
+      border-radius: 2px;
+      width: 0%;
+      transition: width 1.8s ease-in-out;
+    }
+
+    /* Tarjeta de resultado final */
+    .tarjeta-resultado {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 24px;
+      box-shadow: 0 8px 48px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.15);
+      padding: 36px 28px 28px;
+      width: 100%;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .tarjeta-resultado::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(241,196,15,0.06) 0%, transparent 50%);
+      pointer-events: none;
+    }
+
+    .emoji-celebracion {
+      font-size: 3rem;
+      margin-bottom: 4px;
+      display: block;
+      animation: rebote 0.6s cubic-bezier(.36,.07,.19,.97) forwards 0.3s;
+      transform: scale(0);
+    }
+
+    @keyframes rebote {
+      0%   { transform: scale(0); }
+      60%  { transform: scale(1.3); }
+      100% { transform: scale(1); }
+    }
+
+    .nombre-usuario-top {
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.55);
+      margin-bottom: 20px;
+      letter-spacing: 0.5px;
+    }
+
+    /* ── Animaciones troll de la caja ── */
+
+    @keyframes golpe {
+      0%   { transform: scale(1.2) rotate(-8deg); }
+      30%  { transform: scale(0.88) rotate(6deg); }
+      60%  { transform: scale(1.08) rotate(-3deg); }
+      100% { transform: scale(1) rotate(0deg); }
+    }
+
+    @keyframes explosion {
+      0%   { transform: scale(1)   rotate(0deg);   opacity: 1; filter: brightness(1); }
+      30%  { transform: scale(1.6) rotate(-12deg); opacity: 1; filter: brightness(2) blur(2px); }
+      60%  { transform: scale(2.2) rotate(15deg);  opacity: 0.6; filter: brightness(3) blur(6px); }
+      100% { transform: scale(3.5) rotate(-5deg);  opacity: 0; filter: brightness(5) blur(20px); }
+    }
+
+    @keyframes flashPantalla {
+      0%   { opacity: 0.9; }
+      100% { opacity: 0;   }
+    }
+
+    @keyframes shakeBody {
+      0%, 100% { transform: translateX(0); }
+      20%       { transform: translateX(-10px); }
+      40%       { transform: translateX(10px); }
+      60%       { transform: translateX(-8px); }
+      80%       { transform: translateX(8px); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="pagina">
+
+  <!-- FASE 1: Suspense -->
+  <div id="fase-suspense" class="activa" style="flex-direction:column; align-items:center; gap:24px; padding:20px;">
+    <span style="font-size:4rem; animation: parpadeo 1.5s ease-in-out infinite;">🎰</span>
+    <p class="texto-suspense">Consultando el oráculo del Descontrol</p>
+    <div class="puntos-suspensivos" aria-hidden="true">
+      <span>.</span><span>.</span><span>.</span>
+    </div>
+    <div class="barra-progreso">
+      <div class="barra-progreso-inner" id="barraProgreso"></div>
+    </div>
+  </div>
+
+  <!-- FASE 1.5: Apuesta troll -->
+  <div id="fase-apuesta">
+    <p class="pregunta-apuesta" id="preguntaApuesta"></p>
+    <div class="opciones-apuesta" id="opcionesApuesta"></div>
+  </div>
+
+  <!-- FASE 2: Caja troll interactiva -->
+  <div id="fase-caja" style="flex-direction:column; align-items:center; gap:20px; padding: 16px;">
+    <p id="texto-instruccion" style="font-family:'Mountains of Christmas',serif; font-size:1.3rem; color:rgba(255,255,255,0.75); text-align:center; transition: all 0.3s;">
+      Tu destino está sellado... 🤫
+    </p>
+
+    <!-- Caja clicable -->
+    <div class="caja-regalo" id="cajaTemblorosa" role="button" tabindex="0"
+         aria-label="Pulsa para abrir el regalo"
+         style="cursor:pointer; user-select:none; -webkit-user-select:none;">🎁</div>
+
+    <!-- Mensaje troll (oculto al inicio) -->
+    <div id="msg-troll" style="
+      display:none;
+      text-align:center;
+      font-family:'Mountains of Christmas',serif;
+      font-weight:700;
+      font-size:clamp(1.8rem, 7vw, 2.4rem);
+      line-height:1.15;
+      color: #a8d8f0;
+      text-shadow: 0 0 20px rgba(93,173,226,0.7), 0 2px 6px rgba(0,0,0,0.6);
+      max-width: 340px;
+      animation: fadeSubir 0.4s ease forwards;
+    "></div>
+
+    <p class="texto-caja" id="texto-toques">Dale para abrir 👇</p>
+  </div>
+
+  <!-- FASE 3: Revelación -->
+  <div id="fase-revelacion" style="flex-direction:column; align-items:center; gap:16px; width:100%; max-width:460px;">
+    <div class="halo" aria-hidden="true"></div>
+
+    <div class="tarjeta-resultado">
+      <p class="nombre-usuario-top" id="nombreUsuarioTop"></p>
+
+      <span class="emoji-celebracion">🎉</span>
+
+      <div class="luces" aria-hidden="true">
+        <span class="luz"></span><span class="luz"></span><span class="luz"></span>
+        <span class="luz"></span><span class="luz"></span><span class="luz"></span>
+        <span class="luz"></span><span class="luz"></span>
+      </div>
+
+      <div class="adorno-linea"></div>
+
+      <p class="titulo-revelacion">Tu amigo invisible de El Descontrol es...</p>
+
+      <p class="nombre-asignado" id="nombreAsignado">—</p>
+
+      <!-- Foto del asignado (placeholder circular) -->
+      <div class="foto-asignado-wrap">
+        <div class="foto-asignado-placeholder" id="fotoAsignado" aria-hidden="true">🎅</div>
+      </div>
+
+      <div class="adorno-linea"></div>
+
+      <p class="subtexto-revelacion" id="subtextoRevelacion">
+        ¡Toca rascarse el bolsillo, <strong id="nombreEnSubtexto"></strong>! 💸🎅
+      </p>
+
+      <p class="subtexto-gamberro">No lo digas en el grupo. 🤐</p>
+
+      <p class="resultado-apuesta" id="resultadoApuesta" style="display:none;"></p>
+
+      <div class="luces" aria-hidden="true" style="margin-top:8px;">
+        <span class="luz"></span><span class="luz"></span><span class="luz"></span>
+        <span class="luz"></span><span class="luz"></span><span class="luz"></span>
+        <span class="luz"></span><span class="luz"></span>
+      </div>
+    </div>
+
+    <button class="btn btn-outline btn-sm" onclick="volver()" style="margin-top:12px;">
+      ← Volver al inicio
+    </button>
+  </div>
+
+</div>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+<script>
+  'use strict';
+
+  /* ── Leer sesión ── */
+  const nombreUsuario = sessionStorage.getItem('amigoInvisible_usuario');
+  const yaRevelado    = sessionStorage.getItem('amigoInvisible_revelado');
+
+  if (!nombreUsuario) {
+    window.location.href = 'index.html';
+  }
+
+  /* ── Buscar asignado ── */
+  function obtenerAsignado(nombre) {
+    if (!SORTEO_DATA || !SORTEO_DATA.participantes) return null;
+    const p = SORTEO_DATA.participantes.find(
+      x => x.nombre.toLowerCase() === nombre.toLowerCase()
+    );
+    return p ? p.asignado : null;
+  }
+
+  const asignado = obtenerAsignado(nombreUsuario);
+
+  if (!asignado) {
+    // Participante no encontrado, algo fue mal
+    sessionStorage.clear();
+    window.location.href = 'index.html';
+  }
+
+  /* Rellenar datos con el nombre del asignado */
+  document.getElementById('nombreAsignado').textContent    = asignado;
+  document.getElementById('nombreEnSubtexto').textContent  = nombreUsuario;
+  document.getElementById('nombreUsuarioTop').textContent  = `👤 Hola, ${nombreUsuario} 👋`;
+
+  document.title = `Tu amigo: ${asignado} 🎁`;
+
+  /* ── Foto del asignado (si existe en data.js) ── */
+  const partAsignado = SORTEO_DATA.participantes.find(
+    x => x.nombre.toLowerCase() === asignado.toLowerCase()
+  );
+  if (partAsignado && partAsignado.foto) {
+    const fotoEl = document.getElementById('fotoAsignado');
+    fotoEl.innerHTML = `<img src="${partAsignado.foto}" alt="${asignado}" />`;
+  }
+
+  /* ── Confetti ── */
+  const COLORES_CONFETI = [
+    '#5dade2', '#2e86c1', '#a8d8f0', '#1a3a5c',
+    '#d6eaf8', '#ffffff', '#7fb3d3', '#154360',
+    '#85c1e9', '#aed6f1', '#3498db', '#1abc9c'
+  ];
+
+  function lanzarConfeti() {
+    const total = 60;
+    for (let i = 0; i < total; i++) {
+      setTimeout(() => {
+        const pieza = document.createElement('div');
+        pieza.className = 'confeti-pieza';
+        const color = COLORES_CONFETI[Math.floor(Math.random() * COLORES_CONFETI.length)];
+        const izq   = Math.random() * 100;
+        const dur   = Math.random() * 2.5 + 2;
+        const ret   = Math.random() * 0.8;
+        const drift = (Math.random() - 0.5) * 120;
+        const rot   = Math.random() * 360;
+        const ancho = Math.random() * 8 + 6;
+        const alto  = Math.random() * 12 + 8;
+
+        pieza.style.cssText = `
+          left: ${izq}vw;
+          background: ${color};
+          animation-duration: ${dur}s;
+          animation-delay: ${ret}s;
+          --drift: ${drift}px;
+          transform: rotate(${rot}deg);
+          width: ${ancho}px;
+          height: ${alto}px;
+          border-radius: ${Math.random() > 0.5 ? '50%' : '2px'};
+        `;
+
+        document.body.appendChild(pieza);
+
+        // Limpiar después de la animación
+        setTimeout(() => pieza.remove(), (dur + ret + 0.5) * 1000);
+      }, i * 40);
+    }
+  }
+
+  /* ── Estrellas de fondo ── */
+  function crearEstrellas(n) {
+    const emojis = ['⭐', '✨', '🌟', '💫', '❄️'];
+    for (let i = 0; i < n; i++) {
+      setTimeout(() => {
+        const est = document.createElement('div');
+        est.className = 'estrella';
+        est.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+        est.style.cssText = `
+          left: ${Math.random() * 90 + 5}vw;
+          top:  ${Math.random() * 80 + 5}vh;
+          animation-duration: ${Math.random() * 3 + 2}s;
+          animation-delay: ${Math.random() * 1.5}s;
+          font-size: ${Math.random() * 1.2 + 0.8}rem;
+        `;
+        document.body.appendChild(est);
+        setTimeout(() => est.remove(), 6000);
+      }, i * 150);
+    }
+  }
+
+  /* ── Apuesta troll: ¿a quién quieres que te toque? ── */
+  const CLAVE_APUESTA = 'amigoInvisible_apuesta';
+  const MAX_ELEGIDOS  = 3;
+
+  const sexoDe = (nombre) => {
+    const p = SORTEO_DATA.participantes.find(x => x.nombre.toLowerCase() === nombre.toLowerCase());
+    return p ? p.sexo : null;
+  };
+
+  const hayDatosSexo = SORTEO_DATA.participantes.every(p => p.sexo === 'h' || p.sexo === 'm');
+
+  function mostrarApuesta(alTerminar) {
+    const fase     = document.getElementById('fase-apuesta');
+    const pregunta = document.getElementById('preguntaApuesta');
+    const opciones = document.getElementById('opcionesApuesta');
+    const apuesta  = { nombres: [], sexo: null };
+
+    function pintar(texto, lista, alElegir) {
+      pregunta.textContent = texto;
+      opciones.innerHTML = '';
+      lista.forEach(({ etiqueta, valor }) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'opcion-apuesta';
+        b.textContent = etiqueta;
+        b.addEventListener('click', () => alElegir(valor));
+        opciones.appendChild(b);
+      });
+    }
+
+    function pintarMultiple(texto, lista, alConfirmar) {
+      pregunta.textContent = `${texto} (0/${MAX_ELEGIDOS})`;
+      opciones.innerHTML = '';
+      const elegidos = new Set();
+
+      const confirmar = document.createElement('button');
+      confirmar.type = 'button';
+      confirmar.className = 'btn btn-principal';
+      confirmar.style.cssText = 'width:100%; margin-top:12px; opacity:0.4; pointer-events:none;';
+      confirmar.textContent = 'Confirmar 👉';
+      confirmar.addEventListener('click', () => alConfirmar([...elegidos]));
+
+      lista.forEach(({ etiqueta, valor }) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'opcion-apuesta';
+        b.textContent = etiqueta;
+        b.addEventListener('click', () => {
+          if (elegidos.has(valor)) {
+            elegidos.delete(valor);
+          } else {
+            if (elegidos.size >= MAX_ELEGIDOS) return; // límite alcanzado
+            elegidos.add(valor);
+          }
+          b.classList.toggle('seleccionada', elegidos.has(valor));
+          const hay = elegidos.size > 0;
+          confirmar.style.opacity = hay ? '1' : '0.4';
+          confirmar.style.pointerEvents = hay ? 'auto' : 'none';
+          pregunta.textContent = `${texto} (${elegidos.size}/${MAX_ELEGIDOS})`;
+        });
+        opciones.appendChild(b);
+      });
+      opciones.appendChild(confirmar);
+    }
+
+    function terminar() {
+      sessionStorage.setItem(CLAVE_APUESTA, JSON.stringify(apuesta));
+      fase.classList.remove('activa');
+      alTerminar();
+    }
+
+    function preguntarSexo() {
+      pintar(
+        'Y si no es esa persona... ¿qué prefieres? 🤔',
+        [{ etiqueta: '🙋‍♂️ Un chico', valor: 'h' }, { etiqueta: '🙋‍♀️ Una chica', valor: 'm' }],
+        (sexo) => { apuesta.sexo = sexo; terminar(); }
+      );
+    }
+
+    const otros = SORTEO_DATA.participantes
+      .filter(p => p.nombre.toLowerCase() !== nombreUsuario.toLowerCase())
+      .map(p => ({ etiqueta: p.nombre, valor: p.nombre }));
+
+    pintarMultiple(
+      '¿A quién te gustaría que te tocase? 👀 Elige hasta 3',
+      otros,
+      (nombres) => {
+        apuesta.nombres = nombres;
+        if (hayDatosSexo) preguntarSexo(); else terminar();
+      }
+    );
+
+    fase.classList.add('activa');
+  }
+
+  function textoResultadoApuesta(asignado) {
+    let apuesta;
+    try { apuesta = JSON.parse(sessionStorage.getItem(CLAVE_APUESTA)); } catch (e) { apuesta = null; }
+    if (!apuesta || !Array.isArray(apuesta.nombres) || apuesta.nombres.length === 0) return null;
+
+    const eligio = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
+    if (apuesta.nombres.some(n => n.toLowerCase() === asignado.toLowerCase())) {
+      return eligio([
+        'Qué rabia me da que te haya tocado justo quien querías 😒',
+        'Justo a quien querías... me fastidia, qué quieres que te diga 😤',
+      ]);
+    }
+
+    if (hayDatosSexo && apuesta.sexo && apuesta.sexo === sexoDe(asignado)) {
+      const contrario = apuesta.sexo === 'h' ? 'una chica' : 'un chico';
+      return `Has tenido suerte, imagina que te llega a tocar ${contrario} 😮‍💨`;
+    }
+
+    return eligio([
+      'JAJAJA no has dado ni una 🤡',
+      'Ni el nombre ni el sexo... eres un cero a la izquierda 💀',
+    ]);
+  }
+
+  function mostrarResultadoApuesta() {
+    const el = document.getElementById('resultadoApuesta');
+    const texto = sessionStorage.getItem('amigoInvisible_textoApuesta') || textoResultadoApuesta(asignado);
+    if (!texto) return;
+    sessionStorage.setItem('amigoInvisible_textoApuesta', texto);
+    el.textContent = texto;
+    el.style.display = 'block';
+  }
+
+  /* ── Secuencia de animación ── */
+  function mostrarDirectamente() {
+    document.getElementById('fase-suspense').classList.remove('activa');
+    document.getElementById('fase-revelacion').classList.add('activa');
+    mostrarResultadoApuesta();
+  }
+
+  function ejecutarAnimacion() {
+    const faseSuspense    = document.getElementById('fase-suspense');
+    const barraProgreso   = document.getElementById('barraProgreso');
+
+    // Fase 1: Suspense (2000ms automático)
+    faseSuspense.classList.add('activa');
+    setTimeout(() => { barraProgreso.style.width = '100%'; }, 100);
+
+    setTimeout(() => {
+      faseSuspense.classList.remove('activa');
+      faseSuspense.style.display = 'none';
+      mostrarApuesta(iniciarCaja);
+    }, 2000);
+  }
+
+  function iniciarCaja() {
+      const faseCaja = document.getElementById('fase-caja');
+      faseCaja.classList.add('activa');
+
+      // ──────────────────────────────────────────
+      // Fase 2: Caja troll interactiva
+      // ──────────────────────────────────────────
+      const caja         = document.getElementById('cajaTemblorosa');
+      const msgTroll     = document.getElementById('msg-troll');
+      const textoToques  = document.getElementById('texto-toques');
+      const textoInstr   = document.getElementById('texto-instruccion');
+
+      // Umbrales aleatorios
+      const t1 = 5  + Math.floor(Math.random() * 4);   // 5–8  toques → msg1
+      const t2 = t1 + 8  + Math.floor(Math.random() * 5); // +8–12 → msg2
+      const t3 = t2 + 2  + Math.floor(Math.random() * 3); // +2–4  → ¡EXPLOTAR!
+
+      let toques = 0;
+      let bloqueado = false;
+
+      const MSGS = [
+        // Mensaje 1 — suave/troll
+        [
+          "¿Eso es todo lo que tienes? 😂",
+          "Venga, que no muerde 🤌",
+          "¿En serio? Mis abuelas dan más fuerte 👵",
+          "Parece que no quieres saber quién es 👀",
+        ],
+        // Mensaje 2 — fuerte
+        [
+          "TÍOOO 💀 ¡QUE LA ABRAS DE UNA VEZ!",
+          "¡DALE CAÑA!! 😤🔥 ¡DALE!",
+          "¿QUÉ ESPERAS?! ¡REVIÉNTALA! 💥",
+          "¡¡ABRE ESA CAJA PECADOR!! 😱",
+        ],
+      ];
+
+      function msgRandom(arr) {
+        return arr[Math.floor(Math.random() * arr.length)];
+      }
+
+      function mostrarMsg(texto, nivel) {
+        msgTroll.textContent = texto;
+        msgTroll.style.display = 'block';
+        // Nivel 2: más dramático
+        if (nivel === 2) {
+          msgTroll.style.fontSize   = 'clamp(2.3rem, 9.5vw, 3.2rem)';
+          msgTroll.style.color      = '#ffffff';
+          msgTroll.style.textShadow = '0 0 30px rgba(93,173,226,1), 0 0 60px rgba(46,134,193,0.7), 0 3px 8px rgba(0,0,0,0.7)';
+          msgTroll.style.animation  = 'none';
+          void msgTroll.offsetWidth; // reflow para reiniciar animación
+          msgTroll.style.animation  = 'fadeSubir 0.4s ease forwards, parpadeo 0.6s ease-in-out 3';
+        }
+      }
+
+      function tapFeedback() {
+        // Sacudida visual en cada toque
+        caja.style.animation = 'none';
+        void caja.offsetWidth;
+        caja.style.animation = 'golpe 0.25s ease, temblor 0.15s 0.25s infinite';
+        // Escala rápida para feedback táctil
+        caja.style.transform = 'scale(1.15)';
+        setTimeout(() => { caja.style.transform = ''; }, 120);
+      }
+
+      function explotar() {
+        bloqueado = true;
+        caja.style.animation = 'explosion 0.5s cubic-bezier(0.36,0.07,0.19,0.97) forwards';
+        msgTroll.style.display = 'none';
+        textoToques.style.display = 'none';
+        textoInstr.style.display = 'none';
+
+        // Flash de pantalla
+        const flash = document.createElement('div');
+        flash.style.cssText = `
+          position:fixed; inset:0; background:white; z-index:999;
+          animation: flashPantalla 0.5s ease forwards;
+          pointer-events:none;
+        `;
+        document.body.appendChild(flash);
+        setTimeout(() => flash.remove(), 600);
+
+        // Tras la explosión → revelación
+        setTimeout(() => {
+          faseCaja.classList.remove('activa');
+          faseCaja.style.display = 'none';
+
+          const faseRevelacion = document.getElementById('fase-revelacion');
+          faseRevelacion.classList.add('activa');
+          sessionStorage.setItem('amigoInvisible_revelado', '1');
+          lanzarConfeti();
+          crearEstrellas(16);
+          mostrarResultadoApuesta();
+        }, 550);
+      }
+
+      function onToque(e) {
+        e.preventDefault();
+        if (bloqueado) return;
+
+        toques++;
+        tapFeedback();
+
+        // Actualizar contador discreto
+        const restantes = t3 - toques;
+        if (toques < t1) {
+          textoToques.textContent = 'Dale más fuerte 👇';
+        }
+
+        // Umbrales
+        if (toques === t1) {
+          mostrarMsg(msgRandom(MSGS[0]), 1);
+          textoInstr.textContent = '¿Y bien? Sigue 😏';
+          textoToques.textContent = '...';
+        }
+
+        if (toques === t2) {
+          msgTroll.style.animation = 'none';
+          void msgTroll.offsetWidth;
+          mostrarMsg(msgRandom(MSGS[1]), 2);
+          textoInstr.textContent = '¡¡VENGA!! 😤';
+          // Sacudir toda la página
+          document.body.style.animation = 'none';
+          void document.body.offsetWidth;
+          document.body.style.animation = 'shakeBody 0.4s ease';
+          setTimeout(() => { document.body.style.animation = ''; }, 400);
+        }
+
+        if (toques >= t3) {
+          explotar();
+        }
+      }
+
+      // Escuchar tanto click como touch (móvil)
+      caja.addEventListener('click',      onToque, { passive: false });
+      caja.addEventListener('touchstart', onToque, { passive: false });
+  }
+
+  /* ── Punto de entrada ── */
+  document.addEventListener('DOMContentLoaded', () => {
+    if (yaRevelado) {
+      // Ya visto antes: mostrar directamente sin animación
+      mostrarDirectamente();
+    } else {
+      ejecutarAnimacion();
+    }
+  });
+
+  /* ── Botón volver ── */
+  function volver() {
+    limpiarSesion();
+    window.location.href = 'index.html';
+  }
+</script>
+</body>
+</html>
+
