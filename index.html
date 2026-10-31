@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Amigo Invisible El Descontrol — ¡Descubre a quién le toca regalar!" />
+  <meta name="theme-color" content="#0d1b2a" />
+  <title>🎄 Amigo Invisible · El Descontrol</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="pagina">
+  <div class="tarjeta">
+
+    <!-- Foto de grupo (placeholder hasta que tengas la foto real) -->
+    <div class="foto-grupo-wrap">
+      <div class="foto-grupo-placeholder" aria-label="Foto del grupo El Descontrol">
+        🎉
+      </div>
+      <div class="badge-grupo">El Descontrol</div>
+    </div>
+
+    <h1 class="titulo-evento" id="tituloEvento">Amigo Invisible 🎄</h1>
+    <p class="subtitulo">¿Quién te ha tocado esta Navidad, rata? 🐀</p>
+
+    <div class="luces" aria-hidden="true">
+      <span class="luz"></span><span class="luz"></span><span class="luz"></span>
+      <span class="luz"></span><span class="luz"></span><span class="luz"></span>
+      <span class="luz"></span><span class="luz"></span><span class="luz"></span>
+      <span class="luz"></span>
+    </div>
+
+    <!-- Estado: sorteo no configurado -->
+    <div id="avisoNoConfigurado" class="mensaje mensaje-info" style="display:none;">
+      ⏳ Tranquilo/a, el sorteo aún no está listo.<br>
+      Dile al organizador que se ponga las pilas. 🔋
+    </div>
+
+    <!-- Formulario de login -->
+    <form id="formLogin" novalidate>
+      <div class="form-grupo">
+        <label for="nombreInput">🧑 Tu nombre</label>
+        <input
+          type="text"
+          id="nombreInput"
+          placeholder="Ej: Ana García"
+          autocomplete="name"
+          required
+        />
+      </div>
+
+      <div class="form-grupo">
+        <label for="passwordInput">🔑 Tu contraseña secreta</label>
+        <input
+          type="password"
+          id="passwordInput"
+          placeholder="La que te mandó el organizador"
+          autocomplete="current-password"
+          required
+        />
+      </div>
+
+      <button type="submit" class="btn btn-principal">
+        ¡Destápame! 🎁
+      </button>
+
+      <div id="mensajeError" class="mensaje mensaje-error" role="alert">
+        ❌ Eso no cuadra. ¿Seguro que no te has equivocado?
+      </div>
+    </form>
+
+    <div class="adorno-linea"></div>
+    <p style="font-size:0.75rem; color:rgba(255,255,255,0.35); margin-top:4px;">
+      ¿Organizador? Abre <code style="color:rgba(255,255,255,0.55)">admin.html</code> localmente.
+    </p>
+
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+<script>
+  'use strict';
+
+  const tituloEl        = document.getElementById('tituloEvento');
+  const aviso           = document.getElementById('avisoNoConfigurado');
+  const formLogin       = document.getElementById('formLogin');
+  const nombreInput     = document.getElementById('nombreInput');
+  const passwordInput   = document.getElementById('passwordInput');
+  const mensajeError    = document.getElementById('mensajeError');
+
+  /* ── Cargar título ── */
+  if (typeof SORTEO_DATA !== 'undefined' && SORTEO_DATA.titulo) {
+    tituloEl.textContent = 'Amigo Invisible 🎄';
+    document.title = '🎄 Amigo Invisible · El Descontrol';
+  }
+
+  /* ── Foto de grupo ── */
+  if (typeof SORTEO_DATA !== 'undefined' && SORTEO_DATA.fotoGrupo) {
+    const wrap = document.querySelector('.foto-grupo-placeholder');
+    wrap.innerHTML = `<img src="${SORTEO_DATA.fotoGrupo}" alt="El Descontrol" />`;
+  }
+
+  /* ── Verificar si el sorteo está activo ── */
+  const sorteoBloqueado = typeof SORTEO_DATA !== 'undefined' && SORTEO_DATA.locked === true;
+
+  if (!sorteoBloqueado) {
+    aviso.style.display = 'block';
+    formLogin.style.opacity = '0.5';
+    formLogin.style.pointerEvents = 'none';
+  }
+
+  /* ── Login ── */
+  formLogin.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    mensajeError.classList.remove('visible');
+
+    if (!sorteoBloqueado) return;
+
+    const nombreIntroducido   = nombreInput.value.trim();
+    const passwordIntroducido = passwordInput.value;
+
+    if (!nombreIntroducido || !passwordIntroducido) {
+      mensajeError.textContent = '❌ Rellena los dos campos, anda.';
+      mensajeError.classList.add('visible');
+      return;
+    }
+
+    const participante = SORTEO_DATA.participantes.find(p =>
+      p.nombre.toLowerCase() === nombreIntroducido.toLowerCase() &&
+      p.password === passwordIntroducido
+    );
+
+    if (participante) {
+      sessionStorage.setItem('amigoInvisible_usuario', participante.nombre);
+      sessionStorage.removeItem('amigoInvisible_revelado');
+      sessionStorage.removeItem('amigoInvisible_apuesta');
+      sessionStorage.removeItem('amigoInvisible_textoApuesta');
+      window.location.href = 'revelar.html';
+    } else {
+      mensajeError.textContent = '❌ Eso no cuadra. ¿Seguro que no te has equivocado?';
+      mensajeError.classList.add('visible');
+      passwordInput.value = '';
+      passwordInput.focus();
+
+      const tarjeta = document.querySelector('.tarjeta');
+      tarjeta.style.animation = 'none';
+      tarjeta.style.transform = 'translateX(-6px)';
+      setTimeout(() => {
+        tarjeta.style.transition = 'transform 0.4s cubic-bezier(.36,.07,.19,.97)';
+        tarjeta.style.transform = 'translateX(0)';
+      }, 60);
+      setTimeout(() => { tarjeta.style.transition = ''; }, 460);
+    }
+  });
+</script>
+</body>
+</html>
+
